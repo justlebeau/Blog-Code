@@ -500,6 +500,7 @@ tableop<-readHTMLTable(theurl)
 add<-data.frame(tableop[1])
 add<-add[nrow(add),1:26]
 op<-rbind(op,add)
+drafts<-op
 ##
 ##get minutes, points, offensive rebounds, total rebounds, and field goal attempts per game
 ##
