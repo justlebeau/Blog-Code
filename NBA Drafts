@@ -1,6 +1,9 @@
-##read in the draft year stats of the players 2009-2014
+##read in the draft year stats of the players 2009-2014##
 ##this leaves out the first few players :-)##
+
 library(XML)
+library(rattle)
+
 theurl<-'http://www.sports-reference.com/cbb/players/reggie-bullock-2.html#players_totals::none'
 table<-readHTMLTable(theurl)
 op<-data.frame(table[1])
@@ -501,14 +504,17 @@ add<-data.frame(tableop[1])
 add<-add[nrow(add),1:26]
 op<-rbind(op,add)
 drafts<-op
+
 ##
 ##get minutes, points, offensive rebounds, total rebounds, and field goal attempts per game
 ##
+
 drafts$ptspergame<-drafts$players_totals.FG/drafts$players_totals.G
 drafts$fgapergame<-drafts$players_totals.FGA/drafts$players_totals.G
 drafts$minpergame<-drafts$players_totals.MP/drafts$players_totals.G
 drafts$orbpergame<-drafts$players_totals.ORB/drafts$players_totals.G
 drafts$trbpergame<-drafts$players_totals.TRB/drafts$players_totals.G
+
 ##
 ##set quantiles for total rebounds
 ##
@@ -582,7 +588,38 @@ drafts$fgaquartile<-ifelse(drafts$fgaquartile==1,"Lower Quartile",ifelse(drafts$
 drafts$minquartile<-ifelse(drafts$minquartile==1,"Lower Quartile",ifelse(drafts$minquartile==2,"Middle Quartile","Upper Quartile"))
 drafts$ptsquartile<-ifelse(drafts$ptsquartile==1,"Lower Quartile",ifelse(drafts$ptsquartile==2,"Middle Quartile","Upper Quartile"))
 ##
+##get draft pick number
+##
+theurl<-'http://www.basketball-reference.com/draft/NBA_2013.html#stats::none'
+table<-readHTMLTable(theurl)
+add<-data.frame(tableop[1])
+add<-add[,c(1,4)]
+picks<-add
+theurl<-'http://www.basketball-reference.com/draft/NBA_2012.html#stats::none'
+table<-readHTMLTable(theurl)
+add<-data.frame(tableop[1])
+add<-add[,c(1,4)]
+picks<-rbind(picks,add)
+theurl<-'http://www.basketball-reference.com/draft/NBA_2011.html#stats::none'
+table<-readHTMLTable(theurl)
+add<-data.frame(tableop[1])
+add<-add[,c(1,4)]
+picks<-rbind(picks,add)
+theurl<-'http://www.basketball-reference.com/draft/NBA_2010.html#stats::none'
+table<-readHTMLTable(theurl)
+add<-data.frame(tableop[1])
+add<-add[,c(1,4)]
+picks<-rbind(picks,add)
+##
+##match draftpicks
+##
+drafts$pick<-picks$stats.Rk[match(drafts$Player,picks$stats.Player)]
+##
+##create binary column for top five pick
+##
+drafts$topfive<-
 ##get rpart library and fit model
 ##
+
 library(rpart)
 fit<-rpart(
