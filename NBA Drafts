@@ -1,9 +1,11 @@
-##read in the draft year stats of the players 2009-2014##
-##this leaves out the first few players :-)##
-
+##Packages needed
 library(XML)
 library(rattle)
-
+library(rpart)
+##
+##read in the draft year stats of the players 2010-2013##
+##this leaves out the first few players of 2013 :-)##
+##
 theurl<-'http://www.sports-reference.com/cbb/players/reggie-bullock-2.html#players_totals::none'
 table<-readHTMLTable(theurl)
 op<-data.frame(table[1])
@@ -617,9 +619,9 @@ drafts$pick<-picks$stats.Rk[match(drafts$Player,picks$stats.Player)]
 ##
 ##create binary column for top five pick
 ##
-drafts$topfive<-
+drafts$topfive<-ifelse(drafts$pick<6,1,0)
+##
 ##get rpart library and fit model
 ##
-
-library(rpart)
-fit<-rpart(
+fit<-rpart(topfive~minquartile+ptsquartile+trbquartile+fgaquartile,data=drafts)
+fancyRpartPlot(fit)
