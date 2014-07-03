@@ -1,0 +1,27 @@
+##Informal Syrian Refugee Tents Location/Number
+library(XLConnect)
+library(ggmap)
+library(ggplot2)
+library(gdata)
+##Get file from UNHCR Lebanon Data Portal
+url<-"https://www.dropbox.com/sh/agy0qjqvo9121be/AAA6q3Aph4sbqfS_UVR9nPKna/2.%20Mapping%20and%20P-codes/List%20of%20Informal%20Settlements_2014_06_05.xlsx?dl=1"
+download.file(url,destfile="List of Informal Settlements_2014_06_05.xlsx",mode="wb")
+##Read .xlsx file
+tents<-read.xlsx2("List of Informal Settlements_2014_06_05.xlsx",sheetName="IAMP3")
+tents<-as.data.frame(tents)
+##Steps to convert from Julian Date for date the tents settlement was created/documented 
+tents$date<-as.numeric(as.character(tents$Date.the.site.was.created))
+tents$date<-as.date(tents$date)
+tents$date<-as.POSIXct(tents$date)-(60*365*24*60*60)
+tents$date<-as.Date(tents$date)
+tents$Longitude<-as.numeric(as.character(tents$Longitude))
+tents$Latitude<-as.numeric(as.character(tents$Latitude))
+tents$Number.of.Tents<-as.numeric(as.character(tents$Number.of.Tents))
+tents$Number.of.Individuals<-as.numeric(as.character(tents$Number.of.Individuals))
+##Create Map of Locations
+bl<-get_map(location=c(35.9944200,33.8889400),source="google",
+maptype="terrain",crop=FALSE)
+overlay<-geom_point(aes(Longitude,Latitude,size=Number.of.Tents)
+,color="orange",data=tents,alpha=.5)
+##Plot Map
+ggmap(bl)+overlay
