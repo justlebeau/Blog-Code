@@ -29,12 +29,17 @@ tents<-subset(tents,!is.na(date))
 tents<-rbind(tents,nas)
 ##All values in 'date' should be actual dates
 tents$month<-as.yearmon(tents$date)
-tents$year<-as.numeric(format(tents$date,"%Y")
+tents$year<-as.numeric(format(tents$date,"%Y"))
 tents$pplptent<-tents$Number.of.Individuals/tents$Number.of.Tents
 
 ##Create Map of Locations
 bl<-get_map(location=c(35.8244200,33.8889400),source="google",
 +             maptype="terrain",crop=FALSE)
+
+##Overlay of density of tent locations with Kernel Density
+
+overlay<-stat_density2d(aes(Longitude,Latitude,fill=..level..),alpha=..level..,data=tents,geom="polygon")
++scale_alpha(guide="none")
 
 ##Map Refugees and Density of Tents in Lebanon
 
