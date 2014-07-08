@@ -29,10 +29,27 @@ tents<-subset(tents,!is.na(date))
 tents<-rbind(tents,nas)
 ##All values in 'date' should be actual dates
 tents$month<-as.yearmon(tents$date)
+tents$year<-as.numeric(format(tents$date,"%Y")
+tents$pplptent<-tents$Number.of.Individuals/tents$Number.of.Tents
+
 ##Create Map of Locations
-bl<-get_map(location=c(35.9944200,33.8889400),source="google",
-maptype="terrain",crop=FALSE)
-overlay<-geom_point(aes(Longitude,Latitude,size=Number.of.Tents)
-,color="orange",data=tents,alpha=.5)
-##Plot Map
-ggmap(bl)+overlay
+bl<-get_map(location=c(35.8244200,33.8889400),source="google",
++             maptype="terrain",crop=FALSE)
+
+##Map Refugees and Density of Tents in Lebanon
+
+ggmap(bl)+overlay+geom_point(aes(Longitude,Latitude,color=tents$pplptent)
+,size=2,data=tents)+scale_colour_gradient(expression(People_Per_Tent),low="red",high="black")
++ggtitle("Syrian Refugees in Lebanon")
+
+##Just Zahle
+ggmap(bl)+overlay+geom_point(aes(Longitude,Latitude,color=tents$pplptent)
+,size=2,data=tents)+scale_colour_gradient(expression(People_Per_Tent),low="red",high="black")
++xlim(35.75,36)+ylim(33.6,33.9)+ggtitle("Syrian Refugees in Zahle, Lebanon")
+
+
+##Plot Map of Refugees for different years in Zahle
+
+ggmap(bl)+overlay+geom_point(aes(Longitude,Latitude,color=tents$pplptent),size=2,data=tents)
++scale_colour_gradient(expression(People_Per_Tent),low="red",high="black")
++xlim(35.75,36)+ylim(33.6,33.9)+ggtitle("Syrian Refugees in Zahle")+facet_wrap(~year)
