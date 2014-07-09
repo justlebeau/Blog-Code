@@ -45,17 +45,16 @@ overlay<-stat_density2d(aes(Longitude,Latitude,fill=..level..),alpha=..level..,d
 
 ggmap(bl)+overlay+geom_point(aes(Longitude,Latitude,color=tents$pplptent)
 ,size=2,data=tents)+scale_colour_gradient(expression(People_Per_Tent),low="red",high="black")
-+ggtitle("Syrian Refugees in Lebanon")
++ggtitle("Syrian Refugees in Lebanon")+theme(plot.title=element_text(size=20))
 
 ##Just Zahle
 ggmap(bl)+overlay+geom_point(aes(Longitude,Latitude,color=tents$pplptent)
 ,size=2,data=tents)+scale_colour_gradient(expression(People_Per_Tent),low="red",high="black")
-+xlim(35.75,36)+ylim(33.6,33.9)+ggtitle("Syrian Refugees in Zahle")
-
-
++xlim(35.75,36)+ylim(33.6,33.9)+ggtitle("Syrian Refugees in Zahle")+theme(plot.title=element_text(size=20))
 
 ##Plot Map of Refugees for different years in Zahle
 
 ggmap(bl)+overlay+geom_point(aes(Longitude,Latitude,color=tents$pplptent),size=2,data=tents)
 +scale_colour_gradient(expression(People_Per_Tent),low="red",high="black")
-+xlim(35.75,36)+ylim(33.6,33.9)+ggtitle("Syrian Refugees in Zahle")+facet_wrap(~year)
++xlim(35.75,36)+ylim(33.6,33.9)+ggtitle("Syrian Refugees in Zahle")+facet_wrap(~year)+theme(plot.title=element_text(size=20))
+
