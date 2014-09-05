@@ -7,10 +7,10 @@ library(ggmap)
 library(ggplot2)
 library(gdata)
 ##Get file from UNHCR Lebanon Data Portal
-url<-"https://www.dropbox.com/sh/agy0qjqvo9121be/AAA6q3Aph4sbqfS_UVR9nPKna/2.%20Mapping%20and%20P-codes/List%20of%20Informal%20Settlements_2014_06_05.xlsx?dl=1"
-download.file(url,destfile="List of Informal Settlements_2014_06_05.xlsx",mode="wb")
+url<-"https://www.dropbox.com/sh/6gw6c971791i7za/AAAHU64Hu6-qJHZEZBWdeKPLa/2.%20Mapping%20and%20P-codes/List%20of%20Informal%20Settlements_2014_09_01.xlsx?dl=1"
+download.file(url,destfile="List of Informal Settlements_2014_09_01.xlsx",mode="wb")
 ##Read .xlsx file
-tents<-read.xlsx2("List of Informal Settlements_2014_06_05.xlsx",sheetName="IAMP3")
+tents<-read.xlsx2("List of Informal Settlements_2014_09_01.xlsx",sheetName="IAMP6")
 tents<-as.data.frame(tents)
 ##Steps to convert from Julian Date for date the tents settlement was created/documented 
 tents$date<-as.numeric(as.character(tents$Date.the.site.was.created))
