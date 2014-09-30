@@ -1,0 +1,38 @@
+library(XLConnect)
+library(kmeans)
+library(ggplot2)
+library(orloca)
+##Get file from UNHCR Lebanon Data Portal
+url<-"https://www.dropbox.com/sh/6gw6c971791i7za/AAAHU64Hu6-qJHZEZBWdeKPLa/2.%20Mapping%20and%20P-codes/List%20of%20Informal%20Settlements_2014_09_01.xlsx?dl=1"
+download.file(url,destfile="List of Informal Settlements_2014_09_01.xlsx",mode="wb")
+##Read .xlsx file
+settlements<-read.xlsx2("List of Informal Settlements_2014_09_01.xlsx",sheetName="IAMP6")
+##Get only Zahle District Settlements
+zahle<-tents[which(tents$District=="Zahle"),]
+##Kmeans based on latitude of settlement, k=4
+kmeanslat<-kmeans(zahle$Longitude,4)
+##Add to data frame
+zahle$groups<-kmeanslat$cluster
+##Subset data based on Groups
+zahle1<-zahle[which(zahle$groups==1),]
+zahle2<-zahle[which(zahle$groups==2),]
+zahle3<-zahle[which(zahle$groups==3),]
+zahle4<-zahle[which(zahle$groups==4),]
+##Make central points based on settlement population/weight and solve optimzation problem
+loca1<-loca.p(x=(zahle1$Longitude),y=(zahle1$Latitude),w=zahle1$Updated.number.of.Individual)
+point1<-zsummin(loca1)
+##Group 2 did not converge so we will settle with kmeans with k=1
+group2lat<-kmeans(zahle2$Latitude,1)
+group2lon<-kmeans(zahle2$Longitude,1)
+point2<-data.frame(group2lon$centers,group2lat$centers)
+##Continue with optimization based on weights of other groups
+loca3<-loca.p(x=(zahle3$Longitude),y=(zahle3$Latitude),w=zahle3$Updated.number.of.Individual)
+point3<-zsummin(loca3,max.iter=200)
+loca4<-loca.p(x=(zahle4$Longitude),y=(zahle4$Latitude),w=zahle4$Updated.number.of.Individual)
+point4<-(zsummin(loca4,max.iter=100000))
+##Transpose and Make data frame for all points
+colnames(point2)<-c("V1","V2")
+points<-data.frame(do.call(rbind,list(point1,point2,point3,point4)))
+colnames(points)<-c("Lon","Lat")
+##Map on ggplot/ggmap
+ggplot(aes(Longitude,Latitude,color=groups),data=zahle)+geom_point()+geom_point(aes(Lon,Lat),color="red",size=8,alpha=.5,data=points)
