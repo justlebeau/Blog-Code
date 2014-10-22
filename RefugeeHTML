@@ -1,0 +1,16 @@
+##Code for HTML animation of refugee settlements
+##50 .png images in /dotimages directory
+setwd("C:/Users/Justin/Pictures/dotimages")
+files<-dir()
+print(pics<-files[grep(".png",files,ignore.case=T)])
+pics<-mixedsort(pics)
+saveHTML({
+  for(i in pics){
+    tmp <- readPNG(i)
+    par(bg = "thistle",mar=c(0,0,0,0))
+    plot(c(0,20),c(0,60),
+         bty="n", xlab="", ylab="")
+    rasterImage(tmp, 0, 0, 20, 60)
+  }
+},img.name="pic",interval=.2,ani.height=500,ani.width=1000,htmlfile="refugee.html",
+outdire=getwd(),title="Refugee Informal Settlements")
