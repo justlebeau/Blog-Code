@@ -14,3 +14,24 @@ saveHTML({
   }
 },img.name="pic",interval=.2,ani.height=500,ani.width=1000,htmlfile="refugee.html",
 outdire=getwd(),title="Refugee Informal Settlements")
+
+##Code for creating .GIF file of same animation
+library(animation)
+library(png)
+library(raster)
+setwd("C:/Program Files/R/R-3.1.1/dotimages")
+files<-dir()
+pics<-files[grep(".png",files,ignore.case=T)]
+pics<-mixedsort(pics)
+pathc<-"C:/Program Files (x86)/ImageMagick-6.8.9-Q16/convert.exe"
+saveGIF({
+  for(i in pics){
+    tmp <- readPNG(i)
+    par(bg = "white",mar=c(0,0,0,0))
+    plot(c(0,20),c(0,60),
+         bty="n", xlab="", ylab="")
+    rasterImage(tmp, 0, 0, 20, 60)
+  }
+},movie.name="refugee1.gif",img.name="nothing"
+,ani.options(pathc),interval=.4,ani.width=1200,
+ani.height=500,clean=TRUE)
