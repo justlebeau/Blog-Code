@@ -19,10 +19,14 @@ outdire=getwd(),title="Refugee Informal Settlements")
 library(animation)
 library(png)
 library(raster)
+##Set directory to work in with images for .gif
 setwd("C:/Program Files/R/R-3.1.1/dotimages")
 files<-dir()
+##Name character vector of .png files to be made into a .gif
 pics<-files[grep(".png",files,ignore.case=T)]
+##Sort numerically (if they are named numerically)##
 pics<-mixedsort(pics)
+##Must install ImageMagick prior to naming this path
 pathc<-"C:/Program Files (x86)/ImageMagick-6.8.9-Q16/convert.exe"
 saveGIF({
   for(i in pics){
