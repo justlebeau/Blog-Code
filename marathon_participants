@@ -1,0 +1,50 @@
+##Marathon Data Scrape
+library(XML)
+library(plyr)
+##urls
+url2014<-"http://www.arrs.net/MaraList/ML_Stats2014.htm"
+url2013<-"http://www.arrs.net/MaraList/ML_Stats2013.htm"
+url2012<-"http://www.arrs.net/MaraList/ML_Stats2012.htm"
+url2011<-"http://www.arrs.net/MaraList/ML_Stats2011.htm"
+url2010<-"http://www.arrs.net/MaraList/ML_Stats2010.htm"
+url2009<-"http://www.arrs.net/MaraList/ML_Stats2009.htm"
+url2008<-"http://www.arrs.net/MaraList/ML_Stats2008.htm"
+url2007<-"http://www.arrs.net/MaraList/ML_Stats2007.htm"
+url2006<-"http://www.arrs.net/MaraList/ML_Stats2006.htm"
+url2005<-"http://www.arrs.net/MaraList/ML_Stats2005.htm"
+url2004<-"http://www.arrs.net/MaraList/ML_Stats2004.htm"
+url2003<-"http://www.arrs.net/MaraList/ML_Stats2003.htm"
+url2002<-"http://www.arrs.net/MaraList/ML_Stats2002.htm"
+url2001<-"http://www.arrs.net/MaraList/ML_Stats2001.htm"
+url2000<-"http://www.arrs.net/MaraList/ML_Stats2000.htm"
+url1999<-"http://www.arrs.net/MaraList/ML_Stats1999.htm"
+url1998<-"http://www.arrs.net/MaraList/ML_Stats1998.htm"
+url1997<-"http://www.arrs.net/MaraList/ML_Stats1997.htm"
+url1996<-"http://www.arrs.net/MaraList/ML_Stats1996.htm"
+url1995<-"http://www.arrs.net/MaraList/ML_Stats1995.htm"
+url1994<-"http://www.arrs.net/MaraList/ML_Stats1994.htm"
+url1993<-"http://www.arrs.net/MaraList/ML_Stats1993.htm"
+url1992<-"http://www.arrs.net/MaraList/ML_Stats1992.htm"
+url1991<-"http://www.arrs.net/MaraList/ML_Stats1991.htm"
+
+##create list
+raceyears<-list(url2014,url2013,url2012,url2011,url2010,url2009,url2008,url2007,url2006,url2005,
+                url2004,url2003,url2002,url2001,url2000,url1999,url1998,url1997,url1996,url1995,url1994,
+                url1993,url1992,url1991)
+##function for getting data
+raceyearfunction<-function(x){
+  page<-readLines(x)
+  stats<-page[10:19]
+  y<-read.table(textConnection(stats))
+  run<-data.frame(y$V1,y$V2)
+  colnames(run)<-c("Country","Participants")
+  return(run)
+}
+data<-ldply(raceyears,raceyearfunction)
+data$Year<-rep(2014:1991,each=10)
+
+##reorganize for Google Motion Chart 
+
+data<-data[,c(1,3,2)]
+
+##for info plotting see 'googleVis'
