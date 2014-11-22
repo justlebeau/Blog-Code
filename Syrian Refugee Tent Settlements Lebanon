@@ -7,19 +7,20 @@ library(ggmap)
 library(ggplot2)
 library(gdata)
 ##Get file from UNHCR Lebanon Data Portal
-url<-"https://www.dropbox.com/sh/6gw6c971791i7za/AAAHU64Hu6-qJHZEZBWdeKPLa/2.%20Mapping%20and%20P-codes/List%20of%20Informal%20Settlements_2014_09_01.xlsx?dl=1"
-download.file(url,destfile="List of Informal Settlements_2014_09_01.xlsx",mode="wb")
+url<-"https://www.dropbox.com/sh/6gw6c971791i7za/AAAHU64Hu6-qJHZEZBWdeKPLa/2.%20Mapping%20and%20P-codes/List%20of%20Informal%20Settlements_2014_10_03.xlsx?dl=1"
+download.file(url,destfile="List of Informal Settlements_2014_10_03.xlsx",mode="wb")
 ##Read .xlsx file
-tents<-read.xlsx2("List of Informal Settlements_2014_09_01.xlsx",sheetName="IAMP6")
+tents<-read.xlsx2("List of Informal Settlements_2014_10_03.xlsx",sheetName="IAMP7")
 tents<-as.data.frame(tents)
 ##Steps to convert from Julian Date for date the tents settlement was created/documented 
 tents$date<-as.numeric(as.character(tents$Date.the.site.was.created))
-tents$date<-as.date(tents$date)
-tents$date<-as.POSIXct(tents$date)-(60*365*24*60*60)
-tents$date<-as.Date(tents$date)
+tents$date<-date.mmddyy(tents$date)
+tents$date<-as.Date(tents$date,"%m/%d/%Y")
+tents$date<-ymd(tents$date)-years(60)
+tents$date<-as.Date(tents$date,"%m/%d/%Y")
 tents$Longitude<-as.numeric(as.character(tents$Longitude))
 tents$Latitude<-as.numeric(as.character(tents$Latitude))
-tents$Number.of.Tents<-as.numeric(as.character(tents$Number.of.Tents))
+tents$Number.of.Tents<-as.numeric(as.character(tents$Number.of.tents))
 tents$Number.of.Individuals<-as.numeric(as.character(tents$Number.of.Individuals))
 ##Parse NA values for non-Julian dates and convert to dates from date column
 nas<-tents[(is.na(tents$date)),]
@@ -28,7 +29,7 @@ nas<-subset(nas,!is.na(date))
 tents<-subset(tents,!is.na(date))
 tents<-rbind(tents,nas)
 ##All values in 'date' should be actual dates
-tents$month<-as.yearmon(tents$date)
+tents$month<-format(tents$date,"%Y/%m")
 tents$year<-as.numeric(format(tents$date,"%Y"))
 tents$pplptent<-tents$Number.of.Individuals/tents$Number.of.Tents
 
