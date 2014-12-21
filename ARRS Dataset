@@ -18,9 +18,12 @@ write(records,"records.txt")
 ##For some reason I had to write this file and then read it into R
 times<-read.fwf('C:/Users/Justin/Documents/records.txt',comment.char="",
                 col.names=c("Country","Day","Month",
-                            "Location","Time_Male",
+                            "Location","Num","Male.Participants","sym","Female.Participants",
+                            "Race_Name","Time_Male",
                             "Name_Male","Time_Female","Name_Female"),
-                widths=c(6,3,5,86,12,32,12,32))
+                widths=c(6,3,5,30,5,4,1,6,40,12,32,12,32))
+##Take out unwanted column
+times<-times[,-7]
 times$Time_Male<-strptime(times$Time_Male,"%H:%M:%S")
 times$Time_Female<-strptime(times$Time_Female,"%H:%M:%S")
 ##Some redundancy here perhaps
@@ -29,9 +32,16 @@ times$Time_Female<-as.POSIXlt(times$Time_Female,format="%H:%M:%S")
 ##Remove blank space in Months and Countries
 times$Month<-gsub("^\\s+|\\s+$", "",times$Month)
 times$Country<-gsub("^\\s+|\\s+$", "",times$Country)
+times$Male.Participants<-gsub("^\\s+|\\s+$", "",times$Male.Participants)
+times$Female.Participants<-gsub("^\\s+|\\s+$", "",times$Female.Participants)
+times$Male.Participants<-as.numeric(as.character(times$Male.Participants))
+times$Female.Participants<-as.numeric(as.character(times$Female.Participants))
+times$Male.Participants[is.na(times$Male.Participants)]<-0
+times$Female.Participants[is.na(times$Female.Participants)]<-0
+times$Total.Participants<-times$Male.Participants+times$Female.Participants
 times$month<-df$n[match(times$Month,df$m)]
-times$Date<-as.Date( paste(times$month,times$Day,sep="."),format="%m.%d")
 times$Year<-2014
+times<-within(times,Date<-as.POSIXlt(paste(Year,month,Day),format="%Y %m %d"))
 time2014<-times
 
 ##Sample Plot
