@@ -1,0 +1,60 @@
+library(tm)
+library(ggplot2)
+library(grid)
+library(dplyr)
+
+##I didn't find a way to grab all the speeches so just copy
+##and pasted them into text documents to store in the below directory
+corpus<-Corpus(DirSource("C:/Users/Justin/Documents/SOTU"))   
+txt<-tm_map(corpus,stripWhitespace)   
+txt<-tm_map(txt,removePunctuation)   
+stopwordS<-c(stopwords('english'),"and","that","the")   
+txt<-tm_map(txt,removeWords,stopwordS)   
+
+##Issues with tolower
+txt<-tm_map(txt,content_transformer(tolower))   
+txt<-tm_map(txt,stemDocument)
+
+##Create TermDocumentMatrix
+tdm<-TermDocumentMatrix(txt,control=list(wordLength=c(1,Inf)))
+m<-as.matrix(tdm)
+sotu<-data.frame(m)
+sotu$sum<-rowSums(sotu)
+sotu<-sotu[order(-sotu$sum),]
+colnames(sotu)<-c("SOTU2009","SOTU2010","SOTU2011","SOTU2012","SOTU2013","SOTU2014","SOTU2015","sum")
+
+##Get only applause and years
+sotu<-data.frame(t(sotu[1,1:7]))
+sotu$year<-2009:2015
+##Approval ratings for the day/week of each speech retrieved from Gallup site list on blog post
+sotu$approval<-c(64,48,50,45,51,42,46)
+
+##Create graph
+
+p<-ggplot(sotu,aes(year)) +
+  # The actual lines
+  geom_line(aes(y=applaus,colour="#00bdc4"),size=1.6) +
+  geom_line(aes(y=approval,colour="#FD6467"),size=1.6) +
+  annotate("text",x=2010,y=100,colour="#FD6467",label="Applause",size=7,fontface="bold") +
+  annotate("text",x=2010,y=40,colour="#00bdc4",label="Approval Rating (% terms)",size=7,fontface="bold")+
+  theme_bw() +
+  theme(panel.background=element_rect(fill="#F0F0F0")) +
+  theme(plot.background=element_rect(fill="#F0F0F0")) +
+  theme(panel.border=element_rect(colour="#F0F0F0")) +
+  # Format the grid
+  theme(panel.grid.major=element_line(colour="#D0D0D0",size=.75)) +
+  scale_x_continuous(minor_breaks=0,breaks=c(2009,2010,2011,2012,2013,2014,2015)) +
+  theme(axis.ticks=element_blank()) +
+  # Dispose of the legend
+  theme(legend.position="none") +
+  # Set title and axis labels, and format these and tick marks
+  ggtitle("Applause and Public Approval in SOTU") +
+  theme(plot.title=element_text(face="bold",hjust=-.08,vjust=2,colour="#3C3C3C",size=20)) +
+  ylab("Number of Applause Instances / Public Approval % (as measured by Gallup") +
+  xlab("SOTU Year") +
+  theme(axis.text.x=element_text(size=11,colour="#535353",face="bold")) +
+  theme(axis.text.y=element_text(size=11,colour="#535353",face="bold")) +
+  theme(axis.title.y=element_text(size=11,colour="#535353",face="bold",vjust=1.5)) +
+  theme(axis.title.x=element_text(size=11,colour="#535353",face="bold",vjust=-.5)) +
+  # Big bold line at y=0
+  geom_hline(yintercept=0,size=1.2,colour="#535353")
