@@ -3,8 +3,8 @@ library(ggplot2)
 library(grid)
 library(dplyr)
 
-##I didn't find a way to grab all the speeches so just copy
-##and pasted them into text documents to store in the below directory
+##I didn't find a convenient place to grab all the speeches so just copy
+##and pasted them (from various places) into text documents to store in a directory of your choice
 corpus<-Corpus(DirSource("C:/Users/Justin/Documents/SOTU"))   
 txt<-tm_map(corpus,stripWhitespace)   
 txt<-tm_map(txt,removePunctuation)   
