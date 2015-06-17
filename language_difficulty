@@ -1,0 +1,52 @@
+---
+title: "Language Difficulty and Diversity"
+output:
+  html_document:
+    keep_md: yes
+date: "Wednesday, June 17, 2015"
+---
+
+I've been studying Arabic for about 10 months now.  It's challenging, but I didn't know how challenging it was exactly when compared to other languages even though I knew it was on the more challenging end of the spectrum.  Turns out someone has measured (or attempted to) the amount of "class time" a native English speaker would need in order to learn a language.  In general, I've found my language ability improve most when I complement time in the classroom with time practicing with native speakers (which I think would be a more useful measure of time in tandem with "class time").
+
+The data for the chord diagram below was retrieved from a language wiki site that used a study from the Foreign Service Institute.  The number of class hours for each of these languages communicates more a scale of difficulty than exact numbers (as not all learners are equal).  In general, this seemed to be a pretty comprehensive list of world languages so I thought it could look nice in a chord diagram.
+
+*For R users not interested in the post but the code, a markdown file is available on my github page.  Thanks to Zuguang Gu and Bob Rudis for the 'circlize' and 'waffle' packages respectively.
+
+```{r echo=FALSE,results='asis',fig.width = 15, fig.height =15}
+library(circlize)
+mat<-matrix(c(1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4),nrow=4,ncol=85,byrow=TRUE)
+colnames(mat)<-c('Afrikaans','Catalan','Danish','Dutch','French','Galician','Italian','Norwegian',
+                 'Portuguese','Romanian','Spanish','Swedish','German','Indonesian','Javanese',
+                 'Jumieka','Malay','Swahili','Albanian','Amharic','Armenian','Azerbaijani','Belarusian',
+'Bengali','Bosnian','Bulgarian','Burmese','Cebuano','Croatian','Czech','Dzongkha','Estonian','Finnish',
+'Georgian','Greek','Gujarati','Hebrew','Hindi','Hungarian','Icelandic','Ilocano','Irish','Kannada','Kazakh',
+'Kurdish','Kyrgyz','Khmer','Lao','Latvian','Lithuanian','Macedonian','Marathi','Mongolian','Nepali','Pashto','Persian(Dari-Farsi-Tajik)',
+'Polish','Punjabi','Russian','Serbian','Sinhalese','Slovak','Slovenian','Somali','Tagalog','Tamil','Tanchangya','Telugu','Tetum','Thai','Turkish',
+'Turkmen','Ukrainian','Urdu','Uzbek','Vietnamese','Xhosa','Zulu','Arabic','Cantonese','Japanese','Korean','Mandarin','Taiwanese','Wu')
+rownames(mat)<-c('575-600 hours','750-900 hours','1100 hours','2200 hours+')
+matp2<-prop.table(mat,margin=2)
+##plot chord diagram
+chordDiagram(matp2,annotationTrack="grid",preAllocateTracks=list(track.height = 0.3))
+##change axis
+circos.trackPlotRegion(track.index=1, panel.fun=function(x,y) {
+  xlim = get.cell.meta.data("xlim") 
+  ylim = get.cell.meta.data("ylim")
+  sector.name=get.cell.meta.data("sector.index")
+  circos.text(mean(xlim), ylim[1], sector.name,facing="clockwise",
+              niceFacing=TRUE,adj=c(0,0.5))},bg.border=NA)
+```
+
+From my own experience, I've been studying for about 10 months.  Not intensively perse, but about 6 hours per week along with conversation practice I have on my own.  Which means if I miss a few weeks I'll have logged about 300 class hours at a year.  Which is kind of disappointing considering I supposedly need 2,200 class hours!  I think these numbers are really conservative but it does set some sort of benchmark for difficulty when comparing languages for English speakers.  I'm conversational now and feel comfortable with the language (though by no means fluent) after about 300 hours.  Which as a side note is why I think being immersed decreases the numbers above dramatically.  
+
+So, in learning Arabic and spending a supposed 2,200 hours studying it, how many more people can I actually communicate with?  Well, a lot more.  But in terms of world population I was surprised at the percentage of people who accounted for the top 5 most spoken languages (this includes Arabic).  I honestly had no idea language was quite this diverse (in that the top 5 languages comprise 35% of the world's languages, thought it would be more but that's just me).  Furthermore, if we get into dialects these percentages decrease further.  
+
+```{r, echo=FALSE}
+library(waffle)
+languages<-c('Chinese (about 1,190,000,000 people)'=17,'Spanish (about 420,000,000 people)'=6,'English (about 350,000,000 people)'=5,'Hindi (about 280,000,000 people)'=4,'Arabic (about 210,000,000 people)'=3,'All other languages (about 4,550,000,000 people)'=65)
+waffle(languages,rows=5,size=4,xlab='1 square=1% of world population')+ggtitle("Top Five World Languages and all Other Languages")
+```
+
+In real terms though, being able to speak with millions of additional people is fantastic and I would encourage all to pursue such an endeavor.  Perhaps viewing language learning in the context of world language use is a scale reserved for those with unique skills in language acquisition.
