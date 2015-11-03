@@ -1,0 +1,10 @@
+library(UpSetR)
+##cont_mat is data seen on blogpost:  http://www.moreorlessnumbers.com/2015/11/continental-language-diversity.html
+upset(cont_mat,nsets = 7, nintersects=15,
+                  show.numbers="yes",mb.ratio = c(.5, .5),
+                  sets.bar.color = "#40A1C2",main.bar.color="#C36241",
+                  order.by=c("freq"),group.by="degree",
+                  decreasing=c(TRUE,FALSE),queries=
+                    list(list(query=intersects,params=list("Oceania",
+"North.America","South.America","Europe","Africa"),color="orange"),
+list(query=intersects,params=list("Europe"),color="red")))
