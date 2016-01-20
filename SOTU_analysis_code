@@ -1,0 +1,114 @@
+library(syuzhet)
+library(magrittr)
+library(corrplot)
+library(tm)
+library(ggplot2)
+library(grid)
+library(dplyr)
+
+##I didn't find a convenient place to grab all the speeches so just copied
+##and pasted them (from various places) into text documents to store in a directory of your choice
+corpus<-Corpus(DirSource("C:/Users/Justin/Documents/SOTU"))   
+txt<-tm_map(corpus,stripWhitespace)   
+txt<-tm_map(txt,removePunctuation)   
+stopwordS<-c(stopwords('english'),"and","that","the")   
+txt<-tm_map(txt,removeWords,stopwordS)   
+
+##Issues with tolower
+txt<-tm_map(txt,content_transformer(tolower))   
+txt<-tm_map(txt,stemDocument)
+
+##Create TermDocumentMatrix
+tdm<-TermDocumentMatrix(txt,control=list(wordLength=c(1,Inf)))
+m<-as.matrix(tdm)
+sotu<-data.frame(m)
+sotu$sum<-rowSums(sotu)
+sotu<-sotu[order(-sotu$sum),]
+colnames(sotu)<-c("SOTU2009","SOTU2010","SOTU2011","SOTU2012","SOTU2013","SOTU2014","SOTU2015","SOTU2016","sum")
+
+##Get only applause and years
+sotu<-data.frame(t(sotu[1,1:8]))
+sotu$year<-2009:2016
+##Approval ratings for the day/week of each speech retrieved from Gallup site list on blog post
+sotu$approval<-c(64,48,50,45,51,42,46,47)
+##show comparative sentiment
+sotu2009t<-"C:/Users/Justin/Documents/SOTU/2009SOTU.txt" %>%
+get_text_as_string() %>%  get_sentences() %>% removeWords("APPLAUSE") %>% removePunctuation() %>% get_sentiment(method="nrc") %>% get_percentage_values()
+sotu2010<-"C:/Users/Justin/Documents/SOTU/2010SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% removePunctuation() %>% get_sentiment(method="nrc") %>% get_percentage_values()
+sotu2011<-"C:/Users/Justin/Documents/SOTU/2011SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% removePunctuation() %>% get_sentiment(method="nrc") %>% get_percentage_values()
+sotu2012<-"C:/Users/Justin/Documents/SOTU/2012SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% removePunctuation() %>% get_sentiment(method="nrc") %>% get_percentage_values()
+sotu2013<-"C:/Users/Justin/Documents/SOTU/2013SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% removePunctuation() %>% get_sentiment(method="nrc") %>% get_percentage_values()
+sotu2014<-"C:/Users/Justin/Documents/SOTU/2014SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% removePunctuation() %>% get_sentiment(method="nrc") %>% get_percentage_values()
+sotu2015<-"C:/Users/Justin/Documents/SOTU/2015SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% removePunctuation() %>% get_sentiment(method="nrc") %>% get_percentage_values()
+sotu2016<-"C:/Users/Justin/Documents/SOTU/2016SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% removePunctuation() %>% get_sentiment(method="nrc") %>% get_percentage_values()
+df<-data.frame(sotu2009,sotu2010,sotu2011,sotu2012,sotu2013,sotu2014,sotu2015,sotu2016) %>% data.frame()
+##plot
+ggplot(aes(x=1:100),data=df)+geom_line(aes(y=sotu2009,color="2009"))+
+  geom_line(aes(y=sotu2010,color="2010"))+geom_line(aes(y=sotu2011,color="2011"))+
+  geom_line(aes(y=sotu2012,color="2012"))+geom_line(aes(y=sotu2013,color="2013"))+
+  geom_line(aes(y=sotu2014,color="2014"))+geom_line(aes(y=sotu2015,color="2015"))+
+  geom_line(aes(y=sotu2016,color="2016"),size=4)+
+theme_minimal()+theme(legend.title=element_blank())+xlab("Normalized Narrative Time")+ylab("Sentiment Index")+ggtitle("SOTU Speeches")+theme(plot.title=element_text(family="Times", face="bold", size=20))
+##smoothed graph
+ggplot(aes(x=1:100),data=df)+geom_smooth(aes(y=sotu2009,color="2009"),se=FALSE)+
+  geom_smooth(aes(y=sotu2010,color="2010"),se=FALSE)+geom_smooth(aes(y=sotu2011,color="2011"),se=FALSE)+
+  geom_smooth(aes(y=sotu2012,color="2012"),se=FALSE)+geom_smooth(aes(y=sotu2013,color="2013"),se=FALSE)+
+  geom_smooth(aes(y=sotu2014,color="2014"),se=FALSE)+geom_smooth(aes(y=sotu2015,color="2015"),se=FALSE)+
+  geom_smooth(aes(y=sotu2016,color="2016"),size=4,se=FALSE)+
+  theme_minimal()+theme(legend.title=element_blank())+xlab("Normalized Narrative Time")+ylab("Sentiment Index")+ggtitle("SOTU Speeches")+theme(plot.title=element_text(family="Times", face="bold", size=20))
+
+##retrieve sentences
+sotu2009<-"C:/Users/Justin/Documents/SOTU/2009SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% get_nrc_sentiment() %>% t() %>% rowSums()
+sotu2010<-"C:/Users/Justin/Documents/SOTU/2010SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% get_nrc_sentiment() %>% t() %>% rowSums()
+sotu2011<-"C:/Users/Justin/Documents/SOTU/2011SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% get_nrc_sentiment() %>% t() %>% rowSums()
+sotu2012<-"C:/Users/Justin/Documents/SOTU/2012SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% get_nrc_sentiment() %>% t() %>% rowSums()
+sotu2013<-"C:/Users/Justin/Documents/SOTU/2013SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% get_nrc_sentiment() %>% t() %>% rowSums()
+sotu2014<-"C:/Users/Justin/Documents/SOTU/2014SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% get_nrc_sentiment() %>% t() %>% rowSums()
+sotu2015<-"C:/Users/Justin/Documents/SOTU/2015SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% get_nrc_sentiment() %>% t() %>% rowSums()
+sotu2016<-"C:/Users/Justin/Documents/SOTU/2016SOTU.txt" %>%
+  get_text_as_string() %>% get_sentences() %>% removeWords("APPLAUSE") %>% get_nrc_sentiment() %>% t() %>% rowSums()
+
+df<-rownames(sotu2009)
+sotu1<-data.frame(sotu2009,sotu2010,sotu2011,sotu2012,sotu2013,sotu2014,sotu2015,sotu2016) %>% t() %>% data.frame()
+sotu1$applause<-sotu$applause
+sotu1$approval<-sotu$approval
+##correlation matrix
+M<-cor(sotu1)
+##p-values on correlation matrix
+cor.mtest <- function(mat, ...) {
+  mat <- as.matrix(mat)
+  n <- ncol(mat)
+  p.mat<- matrix(NA, n, n)
+  diag(p.mat) <- 0
+  for (i in 1:(n - 1)) {
+    for (j in (i + 1):n) {
+      tmp <- cor.test(mat[, i], mat[, j], ...)
+      p.mat[i, j] <- p.mat[j, i] <- tmp$p.value
+    }
+  }
+  colnames(p.mat) <- rownames(p.mat) <- colnames(mat)
+  p.mat
+}
+p.mat <- cor.mtest(sotu1)
+##define colors for matrix
+col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
+##Matrix visualization with significance
+png(height=1200, width=1200, pointsize=25, file="sotu_mat.png")
+corrplot(M, type="upper", order="hclust", addCoef.col = "black", 
+         tl.col="black", tl.srt=45,col=brewer.pal(n=8, name="BrBG"),
+         p.mat = p.mat, sig.level = 0.1,insig = "blank",diag=FALSE)
+dev.off()
