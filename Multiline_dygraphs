@@ -1,0 +1,14 @@
+library(xts)
+library(dygraphs)
+##I did not find an efficient way to read the text file into R, I copied and pasted into excel, then read from a .csv
+##Please fork/make a code suggestion if you know a more efficient way to read the file directly into R
+##file="http://www.bls.gov/lau/ssamatab2.txt"
+states<-read.csv("~states1.csv",stringsAsFactors = FALSE)
+df2<-as.xts(states[,-1],order.by=as.POSIXct(states$Row.Labels,format="%Y/%m"))
+##Multilines plot
+dy_graph<-dygraph(df2, main = "Unemployment Rates:  US MSAs") %>%
+dyOptions(colors="black")%>%dyHighlight(highlightSeriesOpts = list(strokeWidth = 3,highlightCircleSize=5),
+highlightCircleSize = 0,highlightSeriesBackgroundAlpha = 0.2,hideOnMouseOut = FALSE)
+##add css labeling
+dy_graph$x$css =".dygraph-legend > span {display:none;}.dygraph-legend > span.highlight { display: inline; }"
+dy_graph
