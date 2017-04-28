@@ -8,7 +8,8 @@ library(dplyr)
 ##Prep for things used later
 url<-"https://www.lexile.com/fab/results/?keyword="
 url2<-"https://lexile.com/book/details/"
-dat1<-read.csv("X:/2016-2017/Justin/preschoolisbns.csv",header=FALSE)
+##CSV file with ISBN numbers
+dat1<-read.csv("~isbns.csv",header=FALSE)
 ##dat1<-data.frame(dat1[203:634,])
 dat<-as.character(dat1[,1])%>%trimws()
 ##dat<-dat[41:51]
@@ -39,7 +40,7 @@ lexiledat<-ifelse(is.na(lexile[2])==TRUE,lexile,lexile[2])
 
 test1<-data.frame(lexiledat,NA)
 
-##Breaks every now and then when adding Authory/Pages
+##Breaks every now and then when adding Author/Pages
 ##Author Name
 ##author<-webpath%>%html_nodes(xpath='///div[2]/div/div[2]/span')%>%html_text()%>%as.character()%>%trimws()
 
